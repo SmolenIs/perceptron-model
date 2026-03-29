@@ -14,11 +14,10 @@ class ModernPerceptronApp(ctk.CTk):
         self.title("Моделювання ББП (Перцептрон)")
         self.geometry("650x600")
         
-        # Встановлюємо тему з конфігу (dark або light)
         ctk.set_appearance_mode(self.config.get("theme", "dark"))
         ctk.set_default_color_theme("blue")
         
-        self.last_results = "" # Змінна для зберігання результатів для звіту
+        self.last_results = "" 
         
         self.create_widgets()
         logging.info("Сучасний графічний інтерфейс ініціалізовано.")
