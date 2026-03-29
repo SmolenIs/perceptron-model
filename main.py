@@ -35,3 +35,4 @@ if __name__ == "__main__":
     # Запускаємо сучасний додаток
     app = ModernPerceptronApp(config)
     app.mainloop()
+    

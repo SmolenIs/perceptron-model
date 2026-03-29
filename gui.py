@@ -11,7 +11,6 @@ class ModernPerceptronApp(ctk.CTk):
         super().__init__()
         self.config = config
         
-        # Налаштування вікна
         self.title("Моделювання ББП (Перцептрон)")
         self.geometry("650x600")
         
