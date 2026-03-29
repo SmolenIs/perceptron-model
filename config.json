@@ -1,0 +1,7 @@
+{
+  "app_version": "1.0.0",
+  "theme": "dark",
+  "language": "uk",
+  "log_file": "perceptron_app.log",
+  "reports_dir": "./reports"
+}
