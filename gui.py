@@ -79,15 +79,28 @@ class ModernPerceptronApp(ctk.CTk):
         """Обробка натискання кнопки навчання та валідація даних"""
         self.log_textbox.delete("0.0", "end") # Очищуємо поле
         
-        # 1. Валідація введення (обробка некоректних даних)
+# 1. Валідація введення (обробка некоректних даних)
         try:
-            lr = float(self.lr_entry.get())
-            epochs = int(self.epochs_entry.get())
-            if lr <= 0 or epochs <= 0:
-                raise ValueError("Значення мають бути більше нуля.")
+            # Перевіряємо, чи ввів користувач числа (а не букви)
+            lr_str = self.lr_entry.get().strip()
+            epochs_str = self.epochs_entry.get().strip()
+            
+            if not lr_str or not epochs_str:
+                raise ValueError("Поля не можуть бути порожніми.")
+                
+            lr = float(lr_str)
+            epochs = int(epochs_str)
+            
+            # Перевірка логічних меж
+            if lr <= 0 or lr > 1.0:
+                raise ValueError("Швидкість навчання має бути в межах від 0.01 до 1.0.")
+            if epochs <= 0:
+                raise ValueError("Кількість епох має бути більшою за нуль.")
+                
         except ValueError as e:
-            error_msg = f"Помилка введення: Будь ласка, введіть коректні числа. Деталі: {e}"
-            logging.error(error_msg)
+            # Тепер ми перехоплюємо і букви (стандартна помилка), і наші власні помилки
+            error_msg = f"Помилка введення: {e}\n(Переконайтеся, що ви ввели правильні числа)"
+            logging.error(f"Помилка валідації: {e}")
             messagebox.showerror("Помилка", error_msg)
             self.print_to_log("❌ " + error_msg)
             return
