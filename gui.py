@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 from perceptron import MultilayerBinaryPerceptron
 import tkinter.messagebox as messagebox
+import json
 
 class ModernPerceptronApp(ctk.CTk):
     def __init__(self, config):
@@ -22,6 +23,29 @@ class ModernPerceptronApp(ctk.CTk):
         self.create_widgets()
         logging.info("Сучасний графічний інтерфейс ініціалізовано.")
 
+    def save_json(self):
+        """Експорт результатів у формат JSON"""
+        if not hasattr(self, 'json_data'):
+            messagebox.showwarning("Увага", "Спочатку проведіть навчання, щоб згенерувати дані для JSON.")
+            return
+
+        reports_dir = self.config.get("reports_dir", "./reports")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"data_{self.func_combo.get()}_{timestamp}.json"
+        filepath = os.path.join(reports_dir, filename)
+        
+        try:
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(self.json_data, f, indent=4, ensure_ascii=False)
+            logging.info(f"JSON збережено: {filepath}")
+            self.print_to_log(f"\n💾 JSON звіт успішно збережено:\n{filepath}")
+            messagebox.showinfo("Успіх", f"JSON збережено: {filename}")
+        except AttributeError:
+            # Це наш "баг" - якщо натиснути кнопку до навчання, json_data ще не існує
+            error_msg = "Внутрішня помилка: Дані для експорту відсутні!"
+            logging.error(error_msg)
+            messagebox.showerror("Помилка", error_msg)
+    
     def create_widgets(self):
         # Головний фрейм
         self.main_frame = ctk.CTkFrame(self)
@@ -64,6 +88,9 @@ class ModernPerceptronApp(ctk.CTk):
 
         self.report_btn = ctk.CTkButton(self.btn_frame, text="Зберегти звіт", command=self.save_report)
         self.report_btn.pack(side="left", padx=10)
+
+        self.json_btn = ctk.CTkButton(self.btn_frame, text="Експорт у JSON", command=self.save_json)
+        self.json_btn.pack(side="left", padx=10)
 
         # Текстове поле для логів
         self.log_textbox = ctk.CTkTextbox(self.main_frame, width=500, height=200)
@@ -135,6 +162,14 @@ class ModernPerceptronApp(ctk.CTk):
                 result_text += res + "\n"
             
             self.last_results = result_text # Зберігаємо для звіту
+
+            # Зберігаємо дані для JSON
+            self.json_data = {
+                "function": func_type,
+                "learning_rate": lr,
+                "epochs": epochs,
+                "results": [{"input": X[i].tolist(), "expected": int(y[i][0]), "predicted": int(predictions[i][0])} for i in range(len(X))]
+            }
             
         except Exception as e:
             logging.error(f"Критична помилка під час навчання: {e}")
